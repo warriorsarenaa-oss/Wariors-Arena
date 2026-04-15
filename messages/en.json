@@ -1,0 +1,109 @@
+{
+  "site": {
+    "name": "Warriors Arena",
+    "tagline": "Laser Tag & Gel Blasters",
+    "rights": "© 2025 Warriors Arena. All rights reserved."
+  },
+  "nav": {
+    "book": "Book Now",
+    "faq": "FAQ",
+    "blog": "Blog",
+    "home": "Home"
+  },
+  "booking": {
+    "parkFeeNotice": "Reservation fees do not include park entrance — 30 EGP/person regular days, 50 EGP/person on holidays and festivals.",
+    "cancellationNotice": "To cancel or reschedule, please call us at least 6 hours before your slot.",
+    "placeholderPhone": "[Phone number to be added]"
+  },
+  "home": {
+    "games": "Choose Your Battle",
+    "howItWorks": "How to Book",
+    "importantNotice": "Important Notice",
+    "location": "Find Us",
+    "address": "Al-Azhar Park, Heliopolis, Cairo, Egypt",
+    "getDirections": "Get Directions"
+  },
+  "games": {
+    "laserTag": "Laser Tag",
+    "gelBlasters": "Gel Blasters",
+    "laserTagDescEn": "Laser Tag",
+    "laserTagDescAr": "لايزر تاج",
+    "gelBlastersDescEn": "Gel Blasters",
+    "gelBlastersDescAr": "جيل بلاسترز",
+    "min30": "30 min",
+    "hour1": "1 hour",
+    "price100": "100 EGP/player",
+    "price150": "150 EGP/player",
+    "price300": "300 EGP/player",
+    "maxPlayers": "Max players: up to 6",
+    "bookGame": "Book This Game →",
+    "parkWarning": "⚠️ Reservation fees do not include park entrance tickets — 30 EGP/person on regular days · 50 EGP/person on holidays and festivals"
+  },
+  "howItWorks": {
+    "step1Title": "Choose your game",
+    "step1Desc": "Select either Laser Tag or Gel Blasters for your session.",
+    "step2Title": "Pick your time slot",
+    "step2Desc": "Find a convenient available time in our calendar.",
+    "step3Title": "Info & Verification",
+    "step3Desc": "Fill your details and verify your phone number via SMS.",
+    "step4Title": "Get your booking",
+    "step4Desc": "Receive your booking code and PDF ticket instantly."
+  },
+  "faq": {
+    "title": "Frequently Asked Questions",
+    "q1": "How do I book?",
+    "a1": "Use our online booking system — choose your game, pick a time slot, fill in your info, verify your phone number, and receive your booking code instantly.",
+    "q2": "Can I cancel my reservation?",
+    "a2": "Yes, but cancellations must be made at least 6 hours before your slot. Please call us directly to cancel.",
+    "q3": "Are park entrance fees included?",
+    "a3": "No. Park entrance is 30 EGP/person on regular days and 50 EGP/person on holidays and festivals. This is separate from your game reservation fee.",
+    "q4": "What is the maximum number of players?",
+    "a4": "Up to 6 players per session.",
+    "q5": "Do I need to create an account?",
+    "a5": "No account needed. Just fill in your name, phone number, and email to book.",
+    "q6": "What games are available?",
+    "a6": "Laser Tag (30 min or 1 hour) and Gel Blasters (30 min only).",
+    "q7": "Is there an age limit?",
+    "a7": "[Admin to fill in]",
+    "q8": "What should I wear?",
+    "a8": "[Admin to fill in]"
+  },
+  "blog": {
+    "title": "Blog",
+    "empty": "No posts yet — check back soon!",
+    "readMore": "Read More"
+  },
+  "wizard": {
+    "step1": "Game",
+    "step2": "Date & Time",
+    "step3": "Details",
+    "step4": "Verify",
+    "step5": "Confirm",
+    "back": "← Back",
+    "next": "Next →",
+    "gameSelectHeading": "Choose Your Battle",
+    "totalPriceFrom": "From {price} EGP",
+    "totalPriceFor": "For {players} players: {price} EGP",
+    "dateSelectionHeading": "When do you want to play?",
+    "slotTaken": "This slot is taken",
+    "playerDetailsHeading": "Your Details",
+    "fullName": "Full Name",
+    "phoneNumber": "Phone Number",
+    "email": "Email",
+    "verifyPhoneBtn": "Verify Phone Number →",
+    "cancelPolicy": "Cancellations must be made at least 6 hours before your session.",
+    "verifyPhoneHeading": "Verify Your Phone",
+    "sentCodeTo": "We sent a 6-digit code to {phone}",
+    "verifyCodeBtn": "Verify Code",
+    "resendCodeBtn": "Resend Code",
+    "resendIn": "Resend in 00:{time}",
+    "changePhone": "← Change phone number",
+    "lockingSession": "Locking in your session...",
+    "bookingCode": "Your Booking Code",
+    "downloadPdf": "Download PDF Receipt",
+    "bookAnother": "Book Another Session",
+    "slotTakenError": "This slot was just taken by someone else. Please go back and choose another time.",
+    "chooseAnotherSlot": "Choose Another Slot →",
+    "genericError": "An error occurred. Please try again."
+  }
+}
