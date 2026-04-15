@@ -17,7 +17,8 @@
     "next-intl": "^4.9.0",
     "react": "^18",
     "react-dom": "^18",
-    "tailwindcss-dir": "^4.0.0"
+    "tailwindcss-dir": "^4.0.0",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@types/jest": "^30.0.0",

@@ -7,6 +7,13 @@ import { motion } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
 import { SlotInfo } from '../../lib/slotEngine';
 
+function toLocalDateString(date: Date): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return year + '-' + month + '-' + day;
+}
+
 export default function Step2Calendar() {
   const { state, updateState, setStep } = useBooking();
   const tWizard = useTranslations("wizard");
@@ -24,15 +31,12 @@ export default function Step2Calendar() {
   const fetchSlots = async (date: Date) => {
     setLoading(true);
     setSlots([]);
-    updateState({ selectedDate: date, selectedSlot: null });
     
-    try {
-      const dateStr = [
-        date.getFullYear(),
-        String(date.getMonth() + 1).padStart(2, '0'),
-        String(date.getDate()).padStart(2, '0')
-      ].join('-');
+    // Crucial: Use local date string for API call
+    const dateStr = toLocalDateString(date);
+    console.log('[Step2] Fetching slots for:', dateStr);
 
+    try {
       const params = new URLSearchParams({
         date: dateStr,
         gameType: state.gameType!,
@@ -49,6 +53,13 @@ export default function Step2Calendar() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleDateClick = (date: Date) => {
+      // Create a normalized local date to avoid any shifts
+      const normalizedDate = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 12, 0, 0);
+      updateState({ selectedDate: normalizedDate, selectedSlot: null });
+      fetchSlots(normalizedDate);
   };
 
   const isDayDisabled = (date: Date) => {
@@ -123,7 +134,7 @@ export default function Step2Calendar() {
               <button
                 key={i}
                 disabled={disabled}
-                onClick={() => fetchSlots(date)}
+                onClick={() => handleDateClick(date)}
                 className={`relative aspect-square rounded-full flex items-center justify-center font-bold text-sm transition-all ${
                   disabled 
                     ? 'text-[#A0A0B8]/30 cursor-not-allowed' 

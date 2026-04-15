@@ -51,7 +51,7 @@ describe('getAvailableSlots rules', () => {
           select: jest.fn().mockReturnThis(),
           eq: jest.fn().mockReturnThis(),
           // Second eq resolves the promise with our requested data mock
-          mockResolvedValue: jest.fn().mockResolvedValue({ data: bookings }), 
+          mockResolvedValue: jest.fn().mockResolvedValue({ data: bookings }),
         };
       }
       if (table === 'manual_blocks') {
@@ -65,46 +65,46 @@ describe('getAvailableSlots rules', () => {
 
     // Provide the required fluent builder chains for tests
     const fromImplementation = (table: string) => {
-       if (table === 'working_hours_config') {
-         return {
-           select: () => ({
-             or: () => Promise.resolve({
-               data: [{ day_of_week: null, specific_date: null, slots, is_active: true}],
-               error: null
-             })
-           })
-         };
-       }
-       if (table === 'bookings') {
-          return {
-            select: () => ({
-              eq: () => ({
-                 eq: () => Promise.resolve({
-                   data: bookings, 
-                   error: null
-                 })
+      if (table === 'working_hours_config') {
+        return {
+          select: () => ({
+            or: () => Promise.resolve({
+              data: [{ day_of_week: null, specific_date: null, slots, is_active: true }],
+              error: null
+            })
+          })
+        };
+      }
+      if (table === 'bookings') {
+        return {
+          select: () => ({
+            eq: () => ({
+              eq: () => Promise.resolve({
+                data: bookings,
+                error: null
               })
             })
-          }
-       }
-       if (table === 'manual_blocks') {
-          return {
-             select: () => ({
-                eq: () => Promise.resolve({
-                   data: blocks,
-                   error: null
-                })
-             })
-          }
-       }
+          })
+        }
+      }
+      if (table === 'manual_blocks') {
+        return {
+          select: () => ({
+            eq: () => Promise.resolve({
+              data: blocks,
+              error: null
+            })
+          })
+        }
+      }
     };
     return { from: fromImplementation } as unknown as SupabaseClient;
   };
 
   it('A slot that is completely free should be available', async () => {
     const supabase = createMockSupabase({});
-    const slots = await getAvailableSlots(dummyDate, 'laser_tag', 30, supabase);
-    
+    const slots = await getAvailableSlots(dummyDate, 'laser_tag', 30);
+
     const targetSlot = slots.find(s => s.time24h === '18:00');
     expect(targetSlot?.isAvailable).toBe(true);
   });
@@ -113,11 +113,11 @@ describe('getAvailableSlots rules', () => {
     const supabase = createMockSupabase({
       bookings: [{ start_time: '18:00:00', end_time: '18:30:00' }]
     });
-    const slots = await getAvailableSlots(dummyDate, 'gel_blasters', 30, supabase);
+    const slots = await getAvailableSlots(dummyDate, 'gel_blasters', 30);
 
     const check1800 = slots.find(s => s.time24h === '18:00');
-    const check1830 = slots.find(s => s.time24h === '18:30'); 
-    
+    const check1830 = slots.find(s => s.time24h === '18:30');
+
     expect(check1800?.isAvailable).toBe(false); // Overlapped
     expect(check1830?.isAvailable).toBe(true);  // Does not overlap
   });
@@ -128,7 +128,7 @@ describe('getAvailableSlots rules', () => {
     const supabase = createMockSupabase({
       bookings: [{ start_time: '18:30:00', end_time: '19:30:00' }]
     });
-    const slots = await getAvailableSlots(dummyDate, 'laser_tag', 60, supabase);
+    const slots = await getAvailableSlots(dummyDate, 'laser_tag', 60);
 
     const check1800 = slots.find(s => s.time24h === '18:00');
     expect(check1800?.isAvailable).toBe(false);
@@ -140,7 +140,7 @@ describe('getAvailableSlots rules', () => {
     const supabase = createMockSupabase({
       bookings: [{ start_time: '18:30:00', end_time: '19:00:00' }]
     });
-    const slots = await getAvailableSlots(dummyDate, 'laser_tag', 60, supabase);
+    const slots = await getAvailableSlots(dummyDate, 'laser_tag', 60);
 
     const check1800 = slots.find(s => s.time24h === '18:00');
     expect(check1800?.isAvailable).toBe(false);

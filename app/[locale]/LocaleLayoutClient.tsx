@@ -1,20 +1,20 @@
 "use client";
 
-import {NextIntlClientProvider} from 'next-intl';
-import {ReactNode, useState, useEffect} from 'react';
+import { NextIntlClientProvider } from 'next-intl';
+import { ReactNode, useState, useEffect } from 'react';
 import { Tajawal } from 'next/font/google';
 import Preloader from '../../components/layout/Preloader';
 import { motion, AnimatePresence } from 'framer-motion';
 import '../globals.css';
 
-const tajawal = Tajawal({ 
-  subsets: ['latin', 'arabic'], 
-  weight: ['300', '400', '500', '700', '800', '900'] 
+const tajawal = Tajawal({
+  subsets: ['latin', 'arabic'],
+  weight: ['300', '400', '500', '700', '800', '900']
 });
 
 interface LocaleLayoutProps {
   children: ReactNode;
-  params: Promise<{locale: string}>;
+  params: Promise<{ locale: string }>;
 }
 
 export default function LocaleLayoutClient({
@@ -38,7 +38,7 @@ export default function LocaleLayoutClient({
 
   return (
     <html lang={locale} dir={dir}>
-      <body className={tajawal.className}>
+      <body className={tajawal.className} suppressHydrationWarning={true}>
         <NextIntlClientProvider messages={messages} locale={locale}>
           {/* Preloader */}
           {!preloaderDone && (

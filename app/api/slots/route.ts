@@ -34,7 +34,11 @@ export async function GET(req: NextRequest) {
     }
 
     const durationMinutes = parseInt(durationParam, 10);
-    const date = new Date(dateParam + 'T12:00:00');
+    
+    // Proper local date parsing to prevent day-shifting
+    const [year, month, day] = dateParam.split('-').map(Number);
+    const date = new Date(year, month - 1, day, 12, 0, 0);
+
     if (isNaN(date.getTime())) {
         return NextResponse.json({ error: 'Invalid date format' }, { status: 400 });
     }

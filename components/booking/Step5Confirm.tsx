@@ -6,6 +6,13 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Loader2, Download, AlertTriangle } from 'lucide-react';
 
+function toLocalDateString(date: Date): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return year + '-' + month + '-' + day;
+}
+
 export default function Step5Confirm() {
   const { state, updateState } = useBooking();
   const tWizard = useTranslations("wizard");
@@ -25,7 +32,7 @@ export default function Step5Confirm() {
       try {
         const payload = {
             durationId: state.durationId,
-            date: state.selectedDate?.toISOString().split('T')[0],
+            date: state.selectedDate ? toLocalDateString(state.selectedDate) : null,
             slotTime: state.selectedSlot?.time24h,
             numPlayers: state.numPlayers,
             customerName: state.customerName,

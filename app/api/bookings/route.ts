@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '../../../lib/supabase';
 
+const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+
 function sanitize(input: string): string {
   return input ? input.replace(/<[^>]*>?/gm, "") : "";
 }
@@ -13,13 +15,13 @@ function calculateEndTime(startTime: string, durationMinutes: number): string {
   return `${String(newH).padStart(2, "0")}:${String(newM).padStart(2, "0")}`;
 }
 
-function generateCode(): string {
-  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-  let result = "WA-";
-  for (let i = 0; i < 6; i++) {
-    result += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-  return result;
+function generateBookingCode(date: string, slotTime: string): string {
+  const [, month, day] = date.split('-');
+  const hour = slotTime.split(':')[0];
+  const rand = Array.from({ length: 2 }, () => 
+    chars[Math.floor(Math.random() * chars.length)]
+  ).join('');
+  return 'WA-' + month + day + '-' + hour + '-' + rand;
 }
 
 export async function POST(req: NextRequest) {
@@ -45,7 +47,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "All fields are required" }, { status: 400 });
     }
 
-    // 3. Fetch duration info
     const { data: duration, error: durError } = await supabaseAdmin
       .from("game_durations")
       .select("id, game_type_id, duration_minutes, price_per_player")
@@ -56,10 +57,21 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Invalid duration ID" }, { status: 400 });
     }
 
-    // 4. Calculate
     const slotEndTime = calculateEndTime(slotTime, duration.duration_minutes);
     const totalPrice = duration.price_per_player * numPlayers;
-    const bookingCode = generateCode();
+    
+    // Generate Booking Code with Collision Protection
+    let bookingCode = generateBookingCode(date, slotTime);
+    
+    const { data: existing } = await supabaseAdmin
+      .from('bookings')
+      .select('id')
+      .eq('booking_code', bookingCode)
+      .single();
+
+    if (existing) {
+      bookingCode = bookingCode + chars[Math.floor(Math.random() * chars.length)];
+    }
 
     console.log("[Bookings] Inserting:", { 
         booking_code: bookingCode, 
@@ -69,7 +81,6 @@ export async function POST(req: NextRequest) {
         total_price: totalPrice 
     });
 
-    // 5. INSERT into bookings using EXACTLY these column names
     const { data, error } = await supabaseAdmin
       .from("bookings")
       .insert({
@@ -89,13 +100,10 @@ export async function POST(req: NextRequest) {
       .select()
       .single();
 
-    console.log("[Bookings] Result:", JSON.stringify(data), "Error:", error?.message);
-
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    // 6. Return mapped record for frontend
     const mappedResult = {
         gameTypeId: data.game_type_id,
         durationId: data.duration_id,

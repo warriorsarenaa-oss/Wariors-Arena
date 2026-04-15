@@ -24,7 +24,7 @@ export default function Step1GameSelect() {
       
       if (!res.ok) throw new Error(data.error);
 
-      console.log('[Step1] Selected durationId:', data.id, 'gameType:', gameId);
+      console.log('[BookingStep1] Live Pricing Capture:', data.price_per_player, 'EGP');
 
       updateState({
         gameType: gameId,
@@ -33,13 +33,14 @@ export default function Step1GameSelect() {
         durationId: data.id
       });
 
-      // Simple visual feedback before auto-advancing
+      // Subtle atmospheric delay
       setTimeout(() => {
         setStep(2);
       }, 400);
 
     } catch (err) {
-      console.error('[Step1] Failed to fetch duration UUID:', err);
+      console.error('[BookingStep1] Intelligence retrieval failed:', err);
+      alert('Failed to connect to the arena matrix. Please try again.');
     } finally {
       setLoadingId(null);
     }
@@ -67,7 +68,7 @@ export default function Step1GameSelect() {
       exit={{ opacity: 0, x: -50 }}
       className="w-full flex flex-col"
     >
-      <h2 className="text-2xl md:text-3xl font-bold uppercase tracking-widest text-center mb-10 text-[#FFFFFF]">
+      <h2 className="text-2xl md:text-3xl font-bold uppercase tracking-widest text-center mb-10 text-white">
         {tWizard("gameSelectHeading")}
       </h2>
 
@@ -90,6 +91,7 @@ export default function Step1GameSelect() {
                 return (
                   <button
                     key={mins}
+                    type="button"
                     disabled={!!loadingId}
                     onClick={() => handleSelect(game.id, mins as any)}
                     className={`w-full p-4 rounded-xl font-bold text-lg transition-all flex justify-between items-center border ${
@@ -98,7 +100,7 @@ export default function Step1GameSelect() {
                         : 'bg-[#1E1E2E]/50 text-white border-[#1E1E2E] hover:border-[#00FFCC]/50 hover:bg-[#1E1E2E]'
                     } ${isLoading ? 'opacity-70' : ''}`}
                   >
-                    <span>{mins} {tGames("min30").includes("30") ? "min" : "دقيقة"}</span>
+                    <span>{mins} {locale === 'en' ? 'min' : 'دقيقة'}</span>
                     {isLoading ? <Loader2 className="animate-spin" size={20} /> : <span className="opacity-60 text-sm">Select →</span>}
                   </button>
                 );
