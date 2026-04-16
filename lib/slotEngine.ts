@@ -93,8 +93,7 @@ export async function getBookedRangesForDate(date: Date): Promise<Array<{start: 
     .eq('booking_date', dateStr)
     .eq('status', 'confirmed');
 
-  console.log('[SlotEngine] Querying bookings for date:', 
-    dateStr, '- found:', data?.length, 'bookings');
+
 
   if (error || !data) return [];
   
@@ -150,8 +149,7 @@ export async function getAvailableSlots(
       }
     }
 
-    console.log('[SlotEngine] Slot', slotStart, '- available:', 
-      isAvailable, '- conflicts:', conflictingRanges);
+
 
     // Business rule: 60 min slots require the next 30 min slot to exist in config
     if (isAvailable && durationMinutes === 60) {

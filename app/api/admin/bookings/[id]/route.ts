@@ -24,10 +24,7 @@ export async function PATCH(
   const params = await context.params;
   const id = params.id;
   
-  console.log('[API Cancel] Received PATCH for id:', id);
-
   const isValid = await validateAdminSession(request);
-  console.log('[API Cancel] Session valid:', isValid);
 
   if (!isValid) {
     return NextResponse.json(
@@ -39,7 +36,6 @@ export async function PATCH(
   let body: { status: string };
   try {
     body = await request.json();
-    console.log('[API Cancel] Body:', body);
   } catch {
     return NextResponse.json(
       { error: 'Invalid request body' }, 

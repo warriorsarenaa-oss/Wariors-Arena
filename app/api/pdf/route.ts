@@ -8,7 +8,7 @@ import path from 'path';
 export async function POST(request: NextRequest) {
   try {
     const booking = await request.json();
-    console.log('[PDF] Spawning generator for:', booking.booking_code);
+
 
     const scriptPath = path.join(process.cwd(), 'scripts', 'generatePdf.mjs');
 

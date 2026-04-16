@@ -7,8 +7,21 @@ export async function generateMetadata({params}: {params: Promise<{locale: strin
   const t = await getTranslations({locale, namespace: 'site'});
   return {
     title: `${t('name')} | ${t('tagline')}`,
-    description: t('tagline')
+    description: t('tagline'),
+    manifest: '/manifest.json',
+    themeColor: '#FF3B3B',
+    viewport: {
+      width: 'device-width',
+      initialScale: 1,
+      maximumScale: 1,
+    },
+    appleWebApp: {
+      capable: true,
+      statusBarStyle: 'black-translucent',
+      title: 'Warriors Arena',
+    },
   };
+
 }
 
 export default async function LocaleLayout({

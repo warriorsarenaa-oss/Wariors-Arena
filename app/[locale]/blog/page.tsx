@@ -28,6 +28,12 @@ import { Calendar } from "lucide-react";
 
 export const revalidate = 60;
 
+export const metadata = {
+  title: 'Blog | Warriors Arena',
+  description: 'News, updates, and stories from Warriors Arena — Heliopolis, Cairo.',
+};
+
+
 export default async function BlogPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "blog" });

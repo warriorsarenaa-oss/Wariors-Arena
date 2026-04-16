@@ -298,21 +298,7 @@ export default function ReservationsView() {
         </div>
       )}
 
-      {/* Debug Panel */}
-      <div style={{ 
-        padding: '12px', 
-        backgroundColor: '#1a1a2e',
-        marginTop: '16px',
-        borderRadius: '8px',
-        fontSize: '12px',
-        color: '#A0A0B8'
-      }}>
-        <div>Date: {toDateStr(currentDate)}</div>
-        <div>Total bookings: {bookings.length}</div>
-        <div>Confirmed: {confirmedBookings.length}</div>
-        <div>Blocks: {blocks.length}</div>
-        <div>Grid: {slotGrid.map(s => s.time + ':' + s.status).join(', ')}</div>
-      </div>
+
 
       {/* Manual Booking Modal */}
       {showManualModal && (

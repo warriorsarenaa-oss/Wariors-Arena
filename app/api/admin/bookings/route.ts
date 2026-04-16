@@ -60,10 +60,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    if (date) {
-      console.log('[Admin Bookings] Date:', date, 'Found:', data?.length, 'bookings');
-      console.log('[Admin Bookings] Statuses:', data?.map(b => b.status + ':' + b.slot_time));
-    }
+
 
     return NextResponse.json({
       bookings: (data || []).map(b => ({

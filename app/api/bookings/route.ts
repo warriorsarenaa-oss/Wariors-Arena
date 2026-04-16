@@ -47,6 +47,15 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "All fields are required" }, { status: 400 });
     }
 
+    // Restore Egyptian Phone Validation
+    const egyptianPhoneRegex = /^01[0125][0-9]{8}$/;
+    if (!egyptianPhoneRegex.test(customerPhone)) {
+      return NextResponse.json(
+        { error: 'Invalid Egyptian phone number format. Must start with 010, 011, 012, or 015 followed by 8 digits.' },
+        { status: 400 }
+      );
+    }
+
     const { data: duration, error: durError } = await supabaseAdmin
       .from("game_durations")
       .select("id, game_type_id, duration_minutes, price_per_player")
@@ -59,6 +68,22 @@ export async function POST(req: NextRequest) {
 
     const slotEndTime = calculateEndTime(slotTime, duration.duration_minutes);
     const totalPrice = duration.price_per_player * numPlayers;
+
+    // Explicit overlap conflict check
+    const { data: conflicts } = await supabaseAdmin
+      .from('bookings')
+      .select('id')
+      .eq('booking_date', date)
+      .eq('status', 'confirmed')
+      .lt('slot_time', slotEndTime + ':00')
+      .gt('slot_end_time', slotTime + ':00');
+
+    if (conflicts && conflicts.length > 0) {
+      return NextResponse.json(
+        { error: 'This time slot is no longer available. Please choose another slot.' },
+        { status: 409 }
+      );
+    }
     
     // Generate Booking Code with Collision Protection
     let bookingCode = generateBookingCode(date, slotTime);
@@ -72,14 +97,6 @@ export async function POST(req: NextRequest) {
     if (existing) {
       bookingCode = bookingCode + chars[Math.floor(Math.random() * chars.length)];
     }
-
-    console.log("[Bookings] Inserting:", { 
-        booking_code: bookingCode, 
-        slot_time: slotTime, 
-        slot_end_time: slotEndTime, 
-        num_players: numPlayers, 
-        total_price: totalPrice 
-    });
 
     const { data, error } = await supabaseAdmin
       .from("bookings")
