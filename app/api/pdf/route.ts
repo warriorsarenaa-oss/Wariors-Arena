@@ -7,7 +7,7 @@ import { NextRequest, NextResponse } from 'next/server';
 export async function POST(request: NextRequest) {
   try {
     const booking = await request.json();
-    
+
     if (!booking || !booking.booking_code) {
       return NextResponse.json(
         { error: 'Invalid booking data' },
@@ -15,26 +15,26 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const pdfBuffer = await generatePdfBuffer(booking);
-
-    const filename = (booking.booking_code || 'booking') 
-      + '.pdf';
+    const buffer = await generatePdf(booking);
 
     return new NextResponse(
-      pdfBuffer as unknown as BodyInit,
+      buffer as unknown as BodyInit,
       {
         status: 200,
         headers: {
           'Content-Type': 'application/pdf',
-          'Content-Disposition': 
-            'attachment; filename="' + filename + '"',
+          'Content-Disposition':
+            'attachment; filename="' +
+            booking.booking_code +
+            '.pdf"',
           'Cache-Control': 'no-store',
         },
       }
     );
   } catch (err: unknown) {
-    const msg = err instanceof Error ? 
-      err.message : 'PDF generation failed';
+    const msg = err instanceof Error
+      ? err.message
+      : 'PDF generation failed';
     console.error('[PDF] Error:', msg);
     return NextResponse.json(
       { error: msg },
@@ -43,63 +43,57 @@ export async function POST(request: NextRequest) {
   }
 }
 
-async function generatePdfBuffer(booking: any): 
-  Promise<Buffer> {
-  
-  const ReactPDF = await import('@react-pdf/renderer');
-  const { renderToBuffer, Document, Page, View, Text, 
-    StyleSheet } = ReactPDF;
-  
+async function generatePdf(booking: any): Promise<Buffer> {
   const React = await import('react');
+  const { renderToBuffer, Document, Page, View, Text,
+    StyleSheet } = await import('@react-pdf/renderer');
 
   const styles = StyleSheet.create({
-    page: { 
-      padding: 40, 
+    page: {
+      padding: 40,
       backgroundColor: '#FFFFFF',
-      fontFamily: 'Helvetica'
+      fontFamily: 'Helvetica',
     },
-    header: { 
-      marginBottom: 24, 
-      alignItems: 'center',
+    header: {
+      marginBottom: 20,
+      paddingBottom: 16,
       borderBottomWidth: 2,
       borderBottomColor: '#00FFCC',
-      paddingBottom: 16,
+      alignItems: 'center',
     },
-    logoText: { 
-      fontSize: 24, 
+    logoText: {
+      fontSize: 22,
       fontWeight: 'bold',
       textAlign: 'center',
     },
     subText: {
-      fontSize: 12,
+      fontSize: 11,
       color: '#666666',
       textAlign: 'center',
       marginTop: 4,
     },
-    codeSection: {
+    codeBox: {
       alignItems: 'center',
-      marginVertical: 24,
+      marginVertical: 20,
       padding: 20,
       backgroundColor: '#FFF5F5',
-      borderRadius: 8,
     },
-    codeLabel: { 
-      fontSize: 10, 
+    codeLabel: {
+      fontSize: 10,
       color: '#999999',
       letterSpacing: 2,
       marginBottom: 8,
     },
-    code: { 
-      fontSize: 32, 
+    code: {
+      fontSize: 30,
       fontWeight: 'bold',
       color: '#FF3B3B',
-      letterSpacing: 4,
+      letterSpacing: 3,
     },
-    noticeBox: { 
-      backgroundColor: '#FEF3C7', 
-      padding: 14,
-      borderRadius: 6,
-      marginBottom: 20,
+    noticeBox: {
+      backgroundColor: '#FEF3C7',
+      padding: 12,
+      marginBottom: 16,
     },
     noticeTitle: {
       fontSize: 10,
@@ -107,131 +101,137 @@ async function generatePdfBuffer(booking: any):
       color: '#92400E',
       marginBottom: 4,
     },
-    noticeText: { 
-      fontSize: 9, 
+    noticeText: {
+      fontSize: 9,
       color: '#92400E',
       lineHeight: 1.5,
     },
-    sectionTitle: {
+    sectionLabel: {
       fontSize: 11,
       fontWeight: 'bold',
+      marginTop: 14,
+      marginBottom: 6,
       color: '#333333',
-      marginBottom: 8,
-      marginTop: 16,
     },
-    row: { 
+    row: {
       flexDirection: 'row',
       justifyContent: 'space-between',
-      paddingVertical: 8, 
+      paddingVertical: 7,
       borderBottomWidth: 0.5,
       borderBottomColor: '#E5E7EB',
     },
-    rowLabel: { 
-      fontSize: 10, 
+    label: {
+      fontSize: 10,
       color: '#6B7280',
     },
-    rowValue: { 
-      fontSize: 10, 
+    value: {
+      fontSize: 10,
       fontWeight: 'bold',
       color: '#111827',
     },
-    cancelText: { 
-      marginTop: 20, 
+    footer: {
+      marginTop: 24,
       fontSize: 9,
-      color: '#6B7280', 
+      color: '#9CA3AF',
+      textAlign: 'center',
+    },
+    cancelNote: {
+      marginTop: 16,
+      fontSize: 9,
+      color: '#6B7280',
       textAlign: 'center',
       lineHeight: 1.5,
     },
-    footer: { 
-      marginTop: 16, 
-      fontSize: 9,
-      color: '#9CA3AF', 
-      textAlign: 'center',
-    },
   });
 
-  function formatTime(time: string): string {
+  function fmt(time: string): string {
     if (!time) return '';
-    const clean = time.substring(0, 5);
-    const [h, m] = clean.split(':').map(Number);
-    const period = h >= 12 ? 'PM' : 'AM';
-    const hour = h > 12 ? h - 12 : h === 0 ? 12 : h;
-    return hour + ':' + String(m).padStart(2, '0') + 
-      ' ' + period;
+    const t = time.substring(0, 5);
+    const [h, m] = t.split(':').map(Number);
+    const p = h >= 12 ? 'PM' : 'AM';
+    const hr = h > 12 ? h - 12 : h === 0 ? 12 : h;
+    return hr + ':' + String(m).padStart(2, '0') + ' ' + p;
   }
 
-  const e = React.createElement;
+  const c = React.createElement;
 
-  const doc = e(Document, null,
-    e(Page, { size: 'A4', style: styles.page },
-      e(View, { style: styles.header },
-        e(Text, { style: styles.logoText }, 
+  const doc = c(Document, null,
+    c(Page, { size: 'A4', style: styles.page },
+
+      c(View, { style: styles.header },
+        c(Text, { style: styles.logoText },
           'WARRIORS ARENA'),
-        e(Text, { style: styles.subText },
+        c(Text, { style: styles.subText },
           'Laser Tag & Gel Blasters — Heliopolis, Cairo')
       ),
-      e(View, { style: styles.codeSection },
-        e(Text, { style: styles.codeLabel },
+
+      c(View, { style: styles.codeBox },
+        c(Text, { style: styles.codeLabel },
           'BOOKING CONFIRMATION CODE'),
-        e(Text, { style: styles.code },
-          booking.booking_code || '')
+        c(Text, { style: styles.code },
+          String(booking.booking_code || ''))
       ),
-      e(View, { style: styles.noticeBox },
-        e(Text, { style: styles.noticeTitle },
+
+      c(View, { style: styles.noticeBox },
+        c(Text, { style: styles.noticeTitle },
           'IMPORTANT — Park Entrance Not Included'),
-        e(Text, { style: styles.noticeText },
-          'Park entrance fees are separate from your reservation.\n' +
-          '30 EGP per person on regular days.\n' +
+        c(Text, { style: styles.noticeText },
+          '30 EGP per person on regular days. ' +
           '50 EGP per person on holidays and festivals.')
       ),
-      e(Text, { style: styles.sectionTitle },
+
+      c(Text, { style: styles.sectionLabel },
         'Booking Details'),
-      e(View, { style: styles.row },
-        e(Text, { style: styles.rowLabel }, 'Date'),
-        e(Text, { style: styles.rowValue },
-          booking.booking_date || '')
+
+      c(View, { style: styles.row },
+        c(Text, { style: styles.label }, 'Date'),
+        c(Text, { style: styles.value },
+          String(booking.booking_date || ''))
       ),
-      e(View, { style: styles.row },
-        e(Text, { style: styles.rowLabel }, 'Time'),
-        e(Text, { style: styles.rowValue },
-          formatTime(booking.slot_time || ''))
+      c(View, { style: styles.row },
+        c(Text, { style: styles.label }, 'Time'),
+        c(Text, { style: styles.value },
+          fmt(booking.slot_time || ''))
       ),
-      e(View, { style: styles.row },
-        e(Text, { style: styles.rowLabel }, 'Players'),
-        e(Text, { style: styles.rowValue },
+      c(View, { style: styles.row },
+        c(Text, { style: styles.label }, 'Players'),
+        c(Text, { style: styles.value },
           String(booking.num_players || ''))
       ),
-      e(View, { style: styles.row },
-        e(Text, { style: styles.rowLabel }, 'Total Price'),
-        e(Text, { style: styles.rowValue },
+      c(View, { style: styles.row },
+        c(Text, { style: styles.label }, 'Total Price'),
+        c(Text, { style: styles.value },
           String(booking.total_price || '') + ' EGP')
       ),
-      e(Text, { style: styles.sectionTitle },
+
+      c(Text, { style: styles.sectionLabel },
         'Customer Details'),
-      e(View, { style: styles.row },
-        e(Text, { style: styles.rowLabel }, 'Name'),
-        e(Text, { style: styles.rowValue },
-          booking.customer_name || '')
+
+      c(View, { style: styles.row },
+        c(Text, { style: styles.label }, 'Name'),
+        c(Text, { style: styles.value },
+          String(booking.customer_name || ''))
       ),
-      e(View, { style: styles.row },
-        e(Text, { style: styles.rowLabel }, 'Phone'),
-        e(Text, { style: styles.rowValue },
-          booking.customer_phone || '')
+      c(View, { style: styles.row },
+        c(Text, { style: styles.label }, 'Phone'),
+        c(Text, { style: styles.value },
+          String(booking.customer_phone || ''))
       ),
-      e(View, { style: styles.row },
-        e(Text, { style: styles.rowLabel }, 'Email'),
-        e(Text, { style: styles.rowValue },
-          booking.customer_email || '')
+      c(View, { style: styles.row },
+        c(Text, { style: styles.label }, 'Email'),
+        c(Text, { style: styles.value },
+          String(booking.customer_email || ''))
       ),
-      e(Text, { style: styles.cancelText },
-        'To cancel your reservation, please call us at\n' +
-        'least 6 hours before your session start time.'
-      ),
-      e(Text, { style: styles.footer },
+
+      c(Text, { style: styles.cancelNote },
+        'To cancel, please call us at least 6 hours ' +
+        'before your session start time.'),
+
+      c(Text, { style: styles.footer },
         'Warriors Arena — Heliopolis, Cairo')
     )
   );
 
-  const buffer = await renderToBuffer(doc as any);
-  return buffer as unknown as Buffer;
+  const result = await renderToBuffer(doc as any);
+  return result as unknown as Buffer;
 }
